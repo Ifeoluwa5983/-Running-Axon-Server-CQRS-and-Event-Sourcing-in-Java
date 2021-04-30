@@ -2,9 +2,7 @@ package com.example.Restaurant.events;
 
 import lombok.Data;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
-import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document
 @Data
 public class OrderPlacedEvent {
 
@@ -12,5 +10,7 @@ public class OrderPlacedEvent {
     private final String orderId;
 
     private final String product;
+
+    private String quantity;
 
 }

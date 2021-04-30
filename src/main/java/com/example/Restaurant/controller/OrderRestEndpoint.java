@@ -8,9 +8,7 @@ import com.example.Restaurant.queryModels.OrderedProducts;
 import org.axonframework.commandhandling.gateway.CommandGateway;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -27,11 +25,17 @@ public class OrderRestEndpoint {
     }
 
     @PostMapping("/ship-order")
-    public void shipOrder(String product) {
+    public void shipOrder(@RequestBody String product, String quantity) {
         String orderId = UUID.randomUUID().toString();
-        commandGateway.send(new PlaceOrderCommand(orderId, product));
+        commandGateway.send(new PlaceOrderCommand(orderId, product, quantity));
         commandGateway.send(new ConfirmOrderCommand(orderId));
         commandGateway.send(new ShipOrderCommand(orderId));
+    }
+
+    @PostMapping("/place-order")
+    public void placeOrder(@RequestBody String product, String quantity){
+        String orderId = UUID.randomUUID().toString();
+        commandGateway.send(new PlaceOrderCommand(orderId, product, quantity));
     }
 
     @GetMapping("/all-orders")
@@ -39,4 +43,5 @@ public class OrderRestEndpoint {
         return queryGateway.query(new FindAllOrderedProductsQuery(),
                 ResponseTypes.multipleInstancesOf(OrderedProducts.class)).join();
     }
+
 }

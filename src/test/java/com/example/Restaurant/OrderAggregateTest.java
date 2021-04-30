@@ -11,14 +11,10 @@ import org.axonframework.test.aggregate.FixtureConfiguration;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ContextConfiguration;
 
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @SpringBootTest
-@ContextConfiguration(classes = DataConfig.class)
 class OrderAggregateTest {
 
     private FixtureConfiguration<OrderAggregate> fixture;
@@ -32,8 +28,9 @@ class OrderAggregateTest {
     void  testThatWhenTheAggregateHandlesThePlaceOrderCommand_ItShouldProduceAnOrderPlacedEvent(){
         String orderId = UUID.randomUUID().toString();
         String product = "Deluxe Chair";
+        String quantity = "5";
         fixture.givenNoPriorActivity()
-                .when(new PlaceOrderCommand(orderId, product))
+                .when(new PlaceOrderCommand(orderId, product, quantity))
                 .expectEvents(new OrderPlacedEvent(orderId, product));
     }
 

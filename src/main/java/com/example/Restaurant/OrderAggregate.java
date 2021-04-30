@@ -7,7 +7,10 @@ import com.example.Restaurant.events.OrderConfirmedEvent;
 import com.example.Restaurant.events.OrderPlacedEvent;
 import com.example.Restaurant.events.OrderShippedEvent;
 import com.example.Restaurant.exception.UnconfirmedOrderException;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.axonframework.commandhandling.CommandHandler;
 import org.axonframework.eventsourcing.EventSourcingHandler;
 import org.axonframework.modelling.command.AggregateIdentifier;
@@ -15,8 +18,9 @@ import org.axonframework.spring.stereotype.Aggregate;
 
 import static org.axonframework.modelling.command.AggregateLifecycle.apply;
 
+@Slf4j
 @Aggregate
-@Data
+
 public class OrderAggregate {
 
     @AggregateIdentifier
@@ -36,22 +40,27 @@ public class OrderAggregate {
     }
 
     @CommandHandler
-    public void handle(ConfirmOrderCommand command) {
-        apply(new OrderConfirmedEvent(orderId));
-    }
-
-    @CommandHandler
-    public void handle(ShipOrderCommand command) throws UnconfirmedOrderException {
-        if (!orderConfirmed) {
-            throw new UnconfirmedOrderException();
-        }
-        apply(new OrderShippedEvent(orderId));
+    public void handle (ConfirmOrderCommand command) {
+        apply(new OrderConfirmedEvent(command.getOrderId()));
     }
 
     @EventSourcingHandler
     public void on(OrderConfirmedEvent event) {
-        orderConfirmed = true;
+        log.info("id -> {}", event.getOrderId());
     }
 
-    protected OrderAggregate(){}
+    @CommandHandler
+    public void handle(ShipOrderCommand command) throws UnconfirmedOrderException {
+//        if (!orderConfirmed) {
+//            throw new UnconfirmedOrderException();
+//        }
+        apply(new OrderShippedEvent(command.getOrderId()));
+    }
+
+    @EventSourcingHandler
+    public void on(OrderShippedEvent event){
+        log.info("Got here {}", event);
+    }
+
+    public OrderAggregate(){}
 }

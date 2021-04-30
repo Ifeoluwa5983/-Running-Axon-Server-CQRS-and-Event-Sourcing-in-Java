@@ -1,15 +1,17 @@
 package com.example.Restaurant.commands;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.axonframework.modelling.command.TargetAggregateIdentifier;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@Document
+@AllArgsConstructor
 public class PlaceOrderCommand {
 
     @TargetAggregateIdentifier
     private final String orderId;
 
     private final String product;
+
+    private String quantity;
 }
